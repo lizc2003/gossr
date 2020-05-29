@@ -1,0 +1,18 @@
+host = "0.0.0.0:9090"
+env = "dev"
+v8_maxcount = 5
+v8_lifetime = 0
+js_project_path = "jsproj"
+static_url_path = "/static"
+template_name = "ssr.dev.html"
+internal_api_host = "dev.olist.ng"
+internal_api_ip = "10.7.9.61"
+internal_api_port = 80
+
+[Log]
+debug=true
+filenum=10
+filesize=256
+filename="run"
+level="DEBUG"
+dir="./logs"
