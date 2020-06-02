@@ -4,9 +4,12 @@ v8_maxcount = 30
 v8_lifetime = 3600
 js_project_path = "jsproj"
 static_url_path = "/static"
-template_name = "ssr.prod.html"
 internal_api_ip = "127.0.0.1"
 internal_api_port = 80
+template_name = "ssr.prod.html"
+client_cookie = "gossr-id"
+redirect_onerror = "/error/404"
+ssr_headers = ["User-Agent","X-Forwarded-For"]
 
 [Log]
 debug=false

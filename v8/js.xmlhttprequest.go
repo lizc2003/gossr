@@ -149,7 +149,8 @@ var XMLHttpRequest = function() {
 
 		setRequestHeader: function(header, value) {
 			if (header === void 0 || value === void 0) {
-				throw TypeError(' Failed to execute \'setRequestHeader\' on \'XMLHttpRequest\': 2 arguments required, but only ' + +(headers || value) + ' present.');
+				console.error(' Failed to execute \'setRequestHeader\' on \'XMLHttpRequest\': 2 arguments required, but only ' + +(headers || value) + ' present.');
+				return
 			}
 			headers[header] = value;
 		},

@@ -1,7 +1,6 @@
 package v8
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -58,7 +57,7 @@ func (m *v8module) load() {
 
 	m.Dirname = path.Dir(m.Filename)
 
-	var b bytes.Buffer
+	var b strings.Builder
 	if m.isMain {
 		b.WriteString(fmt.Sprintf(
 			"var main = new NativeModule({ id: '%s', filename: '%s', dirname: '%s' });\n",

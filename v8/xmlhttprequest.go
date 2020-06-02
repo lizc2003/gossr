@@ -177,9 +177,11 @@ func (this *xmlHttpRequestMgr) performRequest(req *xmlHttpReq) {
 	for k, v := range req.Headers {
 		if k == "SSR-Headers" {
 			if v != "" {
-				headers := DecodeSsrHeaders(v)
-				if headers != nil {
+				var headers map[string]string
+				err := json.Unmarshal([]byte(v), &headers)
+				if err == nil {
 					for kk, vv := range headers {
+						kk = strings.ReplaceAll(kk, "_", "-")
 						tlog.Infof("xhr header %s: %s", kk, vv)
 						request.Header.Set(kk, vv)
 					}

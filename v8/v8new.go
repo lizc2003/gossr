@@ -14,6 +14,14 @@ const (
 	MSGTYPE_REQUIRE       = 10
 	MSGTYPE_HTTP          = 11
 	MSGTYPE_HTTP_CALLBACK = 20
+
+	MSGTYPE_SSR_HTML_OK   = 80
+	MSGTYPE_SSR_HTML_FAIL = 81
+	MSGTYPE_SSR_CSS       = 82
+	MSGTYPE_SSR_CONTEXT   = 83
+
+	MSGTYPE_SET_BASEURL     = 101
+	MSGTYPE_SET_AJAXBASEURL = 102
 )
 
 func IsDevEnvironment(env string) bool {
@@ -35,8 +43,8 @@ func newV8Worker(appEnv string) (*v8worker.Worker, error) {
 		nodeEnv = "development"
 	}
 	err := w.Execute("env.js", fmt.Sprintf(`
-		this.global = this;
 		this.process = { env: { VUE_ENV: "server", NODE_ENV: "%s" }};
+		this.global = { process: process};
 		this.APP_ENV = "%s";
 	`, nodeEnv, appEnv))
 
@@ -71,9 +79,9 @@ func v8WorkerSendCallback(w *v8worker.Worker, mtype int, msg string, userdata in
 		tlog.Warning(msg)
 	case MSGTYPE_PRINT_ERROR:
 		tlog.Error(msg)
+	default:
+		TheV8Mgr.SendCallback(mtype, msg, userdata)
 	}
-	//fixme
-	//ThisServer.ClientMgr.SsrPrint(reqId, ptype, msg)
 }
 
 func v8WorkerRequestCallback(w *v8worker.Worker, mtype int, msg string) string {

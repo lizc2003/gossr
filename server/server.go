@@ -29,21 +29,26 @@ type Config struct {
 	V8LifeTime      int         `toml:"v8_lifetime"`
 	JsProjectPath   string      `toml:"js_project_path"`
 	StaticUrlPath   string      `toml:"static_url_path"`
-	TemplateName    string      `toml:"template_name"`
 	InternalApiHost string      `toml:"internal_api_host"`
 	InternalApiIp   string      `toml:"internal_api_ip"`
 	InternalApiPort int32       `toml:"internal_api_port"`
+	TemplateName    string      `toml:"template_name"`
+	ClientCookie    string      `toml:"client_cookie"`
+	RedirectOnerror string      `toml:"redirect_onerror"`
+	SsrHeaders      []string    `toml:"ssr_headers"`
 }
 
 type Server struct {
-	//ClientMgr        *ClientRequestMgr
+	RequstMgr          *RequestMgr
 	V8Mgr              *v8.V8Mgr
-	IdGen              *util.IdGen
 	HostPort           int
 	JsProjectPath      string
-	SsrTemplate        string
 	Env                string
 	IsDevEnv           bool
+	ClientCookie       string
+	RedirectOnerror    string
+	SsrTemplate        string
+	SsrHeaders         []string
 	tmplateBaseUrl     string
 	tmplateAjaxBaseUrl string
 }
@@ -64,28 +69,24 @@ func NewServer(c *Config) error {
 		c.InternalApiPort = 80
 	}
 
+	ThisServer = &Server{
+		RequstMgr:       NewRequestMgr(),
+		HostPort:        hostPort,
+		JsProjectPath:   c.JsProjectPath,
+		SsrTemplate:     c.TemplateName,
+		ClientCookie:    c.ClientCookie,
+		RedirectOnerror: c.RedirectOnerror,
+		Env:             c.Env,
+		SsrHeaders:      c.SsrHeaders,
+		IsDevEnv:        v8.IsDevEnvironment(c.Env),
+	}
+
 	v8mgr, err := newV8Mgr(c)
 	if err != nil {
 		tlog.Fatal(err)
 		return err
 	}
-
-	idGen, err := util.NewBigIdGen(util.GenServerId())
-	if err != nil {
-		tlog.Fatal(err)
-		return err
-	}
-
-	ThisServer = &Server{
-		//ClientMgr:        NewClientRequestMgr(),
-		V8Mgr:         v8mgr,
-		IdGen:         idGen,
-		HostPort:      hostPort,
-		JsProjectPath: c.JsProjectPath,
-		SsrTemplate:   c.TemplateName,
-		Env:           c.Env,
-		IsDevEnv:      v8.IsDevEnvironment(c.Env),
-	}
+	ThisServer.V8Mgr = v8mgr
 
 	handler := getHttpHandler(c)
 	fmt.Println(util.FormatFullTime(time.Now()), "running ...")
@@ -102,8 +103,7 @@ func getHttpHandler(c *Config) http.Handler {
 	e.StaticFile("/favicon.ico", localStaticPath+"/favicon.ico")
 	e.LoadHTMLGlob(c.JsProjectPath + DIST_DIR_SERVER + "/template/*")
 
-	//e.NoRoute(HandleAllRequest)
-
+	e.NoRoute(HandleSsrRequest)
 	return e
 }
 
@@ -127,12 +127,12 @@ func getJsProjectPath(jsProjectPath string) string {
 func newV8Mgr(c *Config) (*v8.V8Mgr, error) {
 	serverPath := c.JsProjectPath + DIST_DIR_SERVER + "/"
 	serverPathMain := serverPath + "g/"
-	vuePath := c.JsProjectPath + "node_modules/vue-server-renderer/"
-	vuePath2 := c.JsProjectPath + "node_modules/vue/dist/"
+	vuePath := c.JsProjectPath + "node_modules/"
 
 	v8Conf := v8.V8MgrConfig{
-		JsPaths: []string{serverPathMain, serverPath, vuePath, vuePath2},
-		Env:     c.Env, MaxWorkerCount: c.V8MaxCount, WorkerLifeTime: c.V8LifeTime,
+		JsPaths:      []string{serverPathMain, serverPath, vuePath},
+		SendCallback: v8SendCallback,
+		Env:          c.Env, MaxWorkerCount: c.V8MaxCount, WorkerLifeTime: c.V8LifeTime,
 		InternalApiHost: c.InternalApiHost, InternalApiIp: c.InternalApiIp, InternalApiPort: c.InternalApiPort}
 	return v8.NewV8Mgr(&v8Conf)
 }

@@ -12,6 +12,8 @@ const (
 	DELETE_DALAY_TIME = 2 * time.Minute
 )
 
+type V8SendCallback func(msgType int, msg string, userdata int64)
+
 type V8MgrConfig struct {
 	Env             string
 	JsPaths         []string
@@ -20,11 +22,13 @@ type V8MgrConfig struct {
 	InternalApiHost string
 	InternalApiIp   string
 	InternalApiPort int32
+	SendCallback    V8SendCallback
 }
 
 type V8Mgr struct {
 	env                string
 	httpMgr            *xmlHttpRequestMgr
+	SendCallback       V8SendCallback
 	workers            chan *v8worker.Worker
 	workerLifeTime     int64
 	maxWorkerCount     int32
@@ -37,20 +41,23 @@ func NewV8Mgr(c *V8MgrConfig) (*V8Mgr, error) {
 	initV8Module(c.JsPaths)
 	initV8NewJs()
 
+	TheV8Mgr = &V8Mgr{env: c.Env,
+		httpMgr:        NewXmlHttpRequestMgr(int(c.MaxWorkerCount)*2, c.InternalApiHost, c.InternalApiIp, c.InternalApiPort),
+		SendCallback:   c.SendCallback,
+		workerLifeTime: int64(c.WorkerLifeTime),
+		maxWorkerCount: c.MaxWorkerCount}
+
 	worker, err := newV8Worker(c.Env)
 	if err != nil {
 		return nil, err
 	}
 
-	lifeTime := int64(c.WorkerLifeTime)
-	worker.SetExpireTime(time.Now().Unix() + lifeTime)
+	worker.SetExpireTime(time.Now().Unix() + int64(c.WorkerLifeTime))
 	workers := make(chan *v8worker.Worker, c.MaxWorkerCount+100)
 	workers <- worker
 
-	TheV8Mgr = &V8Mgr{env: c.Env,
-		httpMgr: NewXmlHttpRequestMgr(int(c.MaxWorkerCount)*2, c.InternalApiHost, c.InternalApiIp, c.InternalApiPort),
-		workers: workers, workerLifeTime: lifeTime,
-		maxWorkerCount: c.MaxWorkerCount, currentWorkerCount: 1}
+	TheV8Mgr.workers = workers
+	TheV8Mgr.currentWorkerCount = 1
 	return TheV8Mgr, nil
 }
 
