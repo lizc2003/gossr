@@ -4,23 +4,10 @@ import (
 	"sync"
 )
 
-type SsrContext struct {
-	Title       string `json:"title"`
-	Keywords    string `json:"keywords"`
-	Description string `json:"description"`
-	Ogimage     string `json:"ogimage"`
-	Canolink    string `json:"canolink"`
-	State       string `json:"state"`
-	Initscript  string `json:"initscript"`
-	Seocontent  string `json:"seocontent"`
-	Schema      string `json:"schema"`
-	Metaheader  string `json:"metaheader"`
-}
-
 type SsrResult struct {
-	Html string     `json:"html"`
-	Css  string     `json:"css"`
-	Ctx  SsrContext `json:"ctx"`
+	Html string            `json:"html"`
+	Css  string            `json:"css"`
+	Meta map[string]string `json:"meta"`
 }
 
 type Request struct {

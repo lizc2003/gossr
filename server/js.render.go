@@ -6,57 +6,48 @@ import (
 
 const renderJsContent = `
 serverBundle(RENDER_CONTEXT).then((appObj) => {
-	var app = appObj.app
-	var context = appObj.context
 	try {
-		var contextData = {
-			title: context.title,
-			keywords: context.keywords,
-			description: context.description,
-			ogimage: context.ogimage,
-			canolink: context.canolink,
-			initscript: context.initscript,
-			seocontent: context.seocontent,
-			schema: context.schema,
-			metaheader: context.metaheader,
-			state: JSON.stringify(context.state)
-		};
-		v8worker.send(83, JSON.stringify(contextData), context.v8reqid)
+		const app = appObj.app
+		const context = appObj.context
+		const meta = context.meta
+		meta.state = JSON.stringify(context.state)
+
+		v8worker.send(83, JSON.stringify(meta), context.v8reqId)
 
 		renderToString(app, context, (err, html) => {
 			try {
 				if (err) {
 					if (err.code == 404) {
-						v8worker.send(81, "404 Page not found", context.v8reqid)
+						v8worker.send(81, "404 Page not found", context.v8reqId)
 					} else if (err.code) {
-						v8worker.send(81, err.code + " Internal Server Error", context.v8reqid)
+						v8worker.send(81, err.code + " Internal Server Error", context.v8reqId)
 					} else {
 						console.error(err)
-						v8worker.send(81, err, context.v8reqid)
+						v8worker.send(81, err, context.v8reqId)
 					}
 				} else {
 					if (context.styles) {
-						v8worker.send(82, context.styles, context.v8reqid)
+						v8worker.send(82, context.styles, context.v8reqId)
 					}
-					v8worker.send(80, html, context.v8reqid)
+					v8worker.send(80, html, context.v8reqId)
 				}
 			} catch(e) {
 				console.error(e);
-				v8worker.send(81, e, context.v8reqid)
+				v8worker.send(81, e, context.v8reqId)
 			}
 		})
 	} catch(e) {
 		console.error(e);
-		v8worker.send(81, e, context.v8reqid)
+		v8worker.send(81, e, context.v8reqId)
 	}
 }, (errObj) => {
-	var err = errObj.err
-	var context = errObj.context
+	const err = errObj.err
+	const context = errObj.context
 	if (err.code == 404) {
-		v8worker.send(81, "404 Page not found", context.v8reqid)
+		v8worker.send(81, "404 Page not found", context.v8reqId)
 	} else {
 		console.error(err)
-		v8worker.send(81, err, context.v8reqid)
+		v8worker.send(81, err, context.v8reqId)
 	}
 });
 `

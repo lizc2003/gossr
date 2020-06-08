@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/lizc2003/gossr/common/tlog"
 	"github.com/lizc2003/gossr/common/util"
 	uuid "github.com/satori/go.uuid"
@@ -41,61 +40,51 @@ func HandleSsrRequest(c *gin.Context) {
 			}
 		}
 	}
-	ssrHeaders := map[string]string{"Cookie": cookie}
-	for _, k := range ThisServer.SsrHeaders {
+	ssrCtx := map[string]string{"Cookie": cookie}
+	for _, k := range ThisServer.SsrCtx {
 		v := c.GetHeader(k)
 		if v == "" && k == "X-Forwarded-For" {
 			v = c.ClientIP()
 		}
-		ssrHeaders[strings.ReplaceAll(k, "-", "_")] = v
+		ssrCtx[strings.ReplaceAll(k, "-", "_")] = v
 	}
 
-	tlog.Infof("%s", url)
-	result, bOK := generateSsrResult(url, ssrHeaders)
+	tlog.Infof("http request: %s", url)
+	result, bOK := generateSsrResult(url, ssrCtx)
 
-	if !bOK && ThisServer.RedirectOnerror != "" {
-		tlog.Warningf("redirect: %s?%s", reqURL.Path, reqURL.RawQuery)
-		result.Ctx.Initscript = fmt.Sprintf("window.location.href = '%s';",
-			ThisServer.RedirectOnerror)
+	if !bOK && ThisServer.RedirectOnerror != "" && reqURL.Path != ThisServer.RedirectOnerror {
+		tlog.Errorf("redirect: %s?%s", reqURL.Path, reqURL.RawQuery)
+		c.Redirect(302, ThisServer.RedirectOnerror)
+		return
 	}
 
 	templateName := ThisServer.SsrTemplate
 	c.HTML(http.StatusOK, templateName, gin.H{
 		"html":        template.HTML(result.Html),
 		"styles":      template.HTML(result.Css),
-		"title":       result.Ctx.Title,
-		"keywords":    result.Ctx.Keywords,
-		"description": result.Ctx.Description,
-		"metaheader":  template.HTML(result.Ctx.Metaheader),
-		"ogimage":     template.HTML(result.Ctx.Ogimage),
-		"canolink":    result.Ctx.Canolink,
-		"state":       template.JS(result.Ctx.State),
-		"initscript":  template.JS(result.Ctx.Initscript),
-		"schema":      template.JS(result.Ctx.Schema),
-		"seocontent":  template.HTML(result.Ctx.Seocontent),
 		"appenv":      ThisServer.Env,
 		"baseurl":     ThisServer.tmplateBaseUrl,
 		"ajaxbaseurl": ThisServer.tmplateAjaxBaseUrl,
 	})
 }
 
-func generateSsrResult(url string, ssrHeaders map[string]string) (SsrResult, bool) {
+func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool) {
 	req := ThisServer.RequstMgr.NewRequest()
 
-	headerJson, _ := json.Marshal(ssrHeaders)
+	headerJson, _ := json.Marshal(ssrCtx)
 	var jsCode strings.Builder
 	jsCode.Grow(renderJsLength + len(headerJson) + len(url) + 30)
 	jsCode.WriteString(renderJsPart1)
-	jsCode.WriteString(`{v8reqid:`)
+	jsCode.WriteString(`{v8reqId:`)
 	jsCode.WriteString(strconv.FormatInt(req.reqId, 10))
-	jsCode.WriteString(`,cookie:"a=b",url:"`)
+	jsCode.WriteString(`,url:"`)
 	jsCode.WriteString(url)
-	jsCode.WriteString(`",ssrHeaders:`)
+	jsCode.WriteString(`",ssrCtx:`)
 	jsCode.Write(headerJson)
 	jsCode.WriteString(`}`)
 	jsCode.WriteString(renderJsPart2)
 
-	fmt.Println(jsCode.String())
+	//fmt.Println(jsCode.String())
 
 	err := ThisServer.V8Mgr.Execute("bundle.js", jsCode.String())
 

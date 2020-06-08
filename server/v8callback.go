@@ -28,13 +28,13 @@ func v8SendCallback(mtype int, msg string, reqId int64) {
 				req.wg.Done()
 			case v8.MSGTYPE_SSR_CSS:
 				req.result.Css = msg
-			case v8.MSGTYPE_SSR_CONTEXT:
-				var ctx SsrContext
-				err := json.Unmarshal([]byte(msg), &ctx)
+			case v8.MSGTYPE_SSR_META:
+				var meta map[string]string
+				err := json.Unmarshal([]byte(msg), &meta)
 				if err != nil {
 					tlog.Error(err)
 				} else {
-					req.result.Ctx = ctx
+					req.result.Meta = meta
 				}
 			}
 		}

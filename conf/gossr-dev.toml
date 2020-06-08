@@ -8,9 +8,22 @@ internal_api_host = "dev.olist.ng"
 internal_api_ip = "10.7.9.61"
 internal_api_port = 80
 template_name = "ssr.dev.html"
-client_cookie = "gossr-id"
+client_cookie = "gossr_id"
 redirect_onerror = ""
-ssr_headers = ["User-Agent","X-Forwarded-For"]
+ssr_ctx = ["User-Agent","X-Forwarded-For"]
+
+[[Templates]]
+key = "Html"
+type = "html"
+[[Templates]]
+key = "Css"
+type = "html"
+[[Templates]]
+key = "InitScript"
+type = "js"
+[[Templates]]
+key = "State"
+type = "js"
 
 [Log]
 debug=true

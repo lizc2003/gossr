@@ -7,9 +7,9 @@ static_url_path = "/static"
 internal_api_ip = "127.0.0.1"
 internal_api_port = 80
 template_name = "ssr.prod.html"
-client_cookie = "gossr-id"
+client_cookie = "gossr_id"
 redirect_onerror = "/error/404"
-ssr_headers = ["User-Agent","X-Forwarded-For"]
+ssr_ctx = ["User-Agent","X-Forwarded-For"]
 
 [Log]
 debug=false

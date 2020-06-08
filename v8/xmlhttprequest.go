@@ -127,7 +127,7 @@ func (this *xmlHttpRequestMgr) open(req *xmlHttpReq) int {
 
 	beginTime := time.Now()
 	this.queue <- req
-	tlog.Infof("http request %d: %s, wait time: %v", req.HttpId, req.Url, time.Since(beginTime))
+	tlog.Infof("xhr request %d: %s, wait time: %v", req.HttpId, req.Url, time.Since(beginTime))
 	return req.HttpId
 }
 
@@ -175,7 +175,7 @@ func (this *xmlHttpRequestMgr) performRequest(req *xmlHttpReq) {
 		request.Host = this.internalApiHost
 	}
 	for k, v := range req.Headers {
-		if k == "SSR-Headers" {
+		if k == "SSR-Ctx" {
 			if v != "" {
 				var headers map[string]string
 				err := json.Unmarshal([]byte(v), &headers)
@@ -254,6 +254,9 @@ func sendHttpErrorEvent(w *v8worker.Worker, evt *xmlHttpEvent, err error) {
 
 func sendHttpEvent(w *v8worker.Worker, evt *xmlHttpEvent) {
 	s, _ := json.Marshal(evt)
-	w.SafeSend(MSGTYPE_HTTP_CALLBACK, string(s))
+	err := w.SafeSend(MSGTYPE_HTTP_CALLBACK, string(s))
+	if err != nil {
+		tlog.Error(err)
+	}
 	evt.Reset()
 }

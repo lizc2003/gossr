@@ -17,25 +17,31 @@ import (
 )
 
 const (
-	DIST_DIR_WWW    = "dist_www"
-	DIST_DIR_SERVER = "dist_server"
+	DIST_DIR_WWW    = "public"
+	DIST_DIR_SERVER = "server_dist"
 )
 
 type Config struct {
-	Host            string      `toml:"host"`
-	Log             tlog.Config `toml:"Log"`
-	Env             string      `toml:"env"`
-	V8MaxCount      int32       `toml:"v8_maxcount"`
-	V8LifeTime      int         `toml:"v8_lifetime"`
-	JsProjectPath   string      `toml:"js_project_path"`
-	StaticUrlPath   string      `toml:"static_url_path"`
-	InternalApiHost string      `toml:"internal_api_host"`
-	InternalApiIp   string      `toml:"internal_api_ip"`
-	InternalApiPort int32       `toml:"internal_api_port"`
-	TemplateName    string      `toml:"template_name"`
-	ClientCookie    string      `toml:"client_cookie"`
-	RedirectOnerror string      `toml:"redirect_onerror"`
-	SsrHeaders      []string    `toml:"ssr_headers"`
+	Host            string        `toml:"host"`
+	Log             tlog.Config   `toml:"Log"`
+	Env             string        `toml:"env"`
+	V8MaxCount      int32         `toml:"v8_maxcount"`
+	V8LifeTime      int           `toml:"v8_lifetime"`
+	JsProjectPath   string        `toml:"js_project_path"`
+	StaticUrlPath   string        `toml:"static_url_path"`
+	InternalApiHost string        `toml:"internal_api_host"`
+	InternalApiIp   string        `toml:"internal_api_ip"`
+	InternalApiPort int32         `toml:"internal_api_port"`
+	TemplateName    string        `toml:"template_name"`
+	ClientCookie    string        `toml:"client_cookie"`
+	RedirectOnerror string        `toml:"redirect_onerror"`
+	SsrCtx          []string      `toml:"ssr_ctx"`
+	Templates       []TemplateKey `toml:"Templates"`
+}
+
+type TemplateKey struct {
+	Key  string `toml:"key"`
+	Type string `toml:"type"`
 }
 
 type Server struct {
@@ -48,7 +54,8 @@ type Server struct {
 	ClientCookie       string
 	RedirectOnerror    string
 	SsrTemplate        string
-	SsrHeaders         []string
+	SsrCtx             []string
+	TemplateKeys       map[string]string
 	tmplateBaseUrl     string
 	tmplateAjaxBaseUrl string
 }
@@ -56,6 +63,13 @@ type Server struct {
 var ThisServer *Server
 
 func NewServer(c *Config) error {
+	templateKeys := map[string]string{"Html": "html", "Css": "html", "State": "js"}
+	for _, v := range c.Templates {
+		if _, ok := templateKeys[v.Key]; !ok {
+			templateKeys[v.Key] = v.Type
+		}
+	}
+
 	jsProjectPath := getJsProjectPath(c.JsProjectPath)
 	if jsProjectPath == "" {
 		return errors.New("Error: the path of js project is empty.")
@@ -77,7 +91,8 @@ func NewServer(c *Config) error {
 		ClientCookie:    c.ClientCookie,
 		RedirectOnerror: c.RedirectOnerror,
 		Env:             c.Env,
-		SsrHeaders:      c.SsrHeaders,
+		SsrCtx:          c.SsrCtx,
+		TemplateKeys:    templateKeys,
 		IsDevEnv:        v8.IsDevEnvironment(c.Env),
 	}
 
