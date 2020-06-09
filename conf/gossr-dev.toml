@@ -7,23 +7,13 @@ static_url_path = "/static"
 internal_api_host = "dev.olist.ng"
 internal_api_ip = "10.7.9.61"
 internal_api_port = 80
+is_api_delegate = true
 template_name = "ssr.dev.html"
 client_cookie = "gossr_id"
 redirect_onerror = ""
 ssr_ctx = ["User-Agent","X-Forwarded-For"]
-
-[[Templates]]
-key = "Html"
-type = "html"
-[[Templates]]
-key = "Css"
-type = "html"
-[[Templates]]
-key = "InitScript"
-type = "js"
-[[Templates]]
-key = "State"
-type = "js"
+Templates = [{key = "State", type = "js"},
+    {key = "OgImage", type = "html"}]
 
 [Log]
 debug=true
@@ -32,3 +22,4 @@ filesize=256
 filename="run"
 level="DEBUG"
 dir="./logs"
+

@@ -10,7 +10,7 @@ serverBundle(RENDER_CONTEXT).then((appObj) => {
 		const app = appObj.app
 		const context = appObj.context
 		const meta = context.meta
-		meta.state = JSON.stringify(context.state)
+		meta.State = JSON.stringify(context.state)
 
 		v8worker.send(83, JSON.stringify(meta), context.v8reqId)
 

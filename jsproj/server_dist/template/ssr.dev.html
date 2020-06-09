@@ -1,56 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-        <meta name="keywords" content="{{ .keywords }}">
-        <meta name="description" content="{{ .description }}">
-        <meta property="og:image" content="{{ .ogimage }}" />
-	    {{ .metaheader }}
-        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-144031313-2"></script>
-        <script>
-			{{ .initscript }}
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-K55KN4Q');
-			window.dataLayer = window.dataLayer || [];
-			function gtag(){dataLayer.push(arguments);}
-			window.GA_TAG_ID = 'UA-144031313-2';
-			gtag('js', new Date());
-            gtag('config', GA_TAG_ID);
-            !(function(p,l,o,w,i,n,g){if(!p[i]){p.GlobalSnowplowNamespace=p.GlobalSnowplowNamespace||[];p.GlobalSnowplowNamespace.push(i);p[i]=function(){(p[i].q=p[i].q||[]).push(arguments)};p[i].q=p[i].q||[];n=l.createElement(o);g=l.getElementsByTagName(o)[0];n.async=1;n.src=w;g.parentNode.insertBefore(n,g)}})(window,document,"script","//res-odx.op-mobile.opera.com/sp.js","otag");
-            otag('init', 'adv241418839104')
-        </script>
-        <script>
-            (function(win,lib){var doc=win.document;var docEl=doc.documentElement;var metaEl=doc.querySelector('meta[name="viewport"]');var flexibleEl=doc.querySelector('meta[name="flexible"]');var dpr=0;var scale=0;var tid;var flexible=lib.flexible||(lib.flexible={});if(metaEl){var match=metaEl.getAttribute("content").match(/initial\-scale=([\d\.]+)/);if(match){scale=parseFloat(match[1]);dpr=parseInt(1/scale)}}else{if(flexibleEl){var content=flexibleEl.getAttribute("content");if(content){var initialDpr=content.match(/initial\-dpr=([\d\.]+)/);var maximumDpr=content.match(/maximum\-dpr=([\d\.]+)/);if(initialDpr){dpr=parseFloat(initialDpr[1]);scale=parseFloat((1/dpr).toFixed(2))}if(maximumDpr){dpr=parseFloat(maximumDpr[1]);scale=parseFloat((1/dpr).toFixed(2))}}}}if(!dpr&&!scale){var isAndroid=win.navigator.appVersion.match(/android/gi);var isIPhone=win.navigator.appVersion.match(/iphone/gi);var devicePixelRatio=win.devicePixelRatio;if(isIPhone){if(devicePixelRatio>=3&&(!dpr||dpr>=3)){dpr=3}else{if(devicePixelRatio>=2&&(!dpr||dpr>=2)){dpr=2}else{dpr=1}}}else{dpr=1}scale=1/dpr}docEl.setAttribute("data-dpr",dpr);if(!metaEl){metaEl=doc.createElement("meta");metaEl.setAttribute("name","viewport");metaEl.setAttribute("content","initial-scale="+scale+", maximum-scale="+scale+", minimum-scale="+scale+", user-scalable=no");if(docEl.firstElementChild){docEl.firstElementChild.appendChild(metaEl)}else{var wrap=doc.createElement("div");wrap.appendChild(metaEl);doc.write(wrap.innerHTML)}}function refreshRem(){var width=docEl.getBoundingClientRect().width;if(width/dpr>540){width=540*dpr}var rem=width/10;docEl.style.fontSize=rem+"px";flexible.rem=win.rem=rem}win.addEventListener("resize",function(){clearTimeout(tid);tid=setTimeout(refreshRem,300)},false);win.addEventListener("pageshow",function(e){if(e.persisted){clearTimeout(tid);tid=setTimeout(refreshRem,300)}},false);if(doc.readyState==="complete"){doc.body.style.fontSize=12*dpr+"px"}else{doc.addEventListener("DOMContentLoaded",function(e){doc.body.style.fontSize=12*dpr+"px"},false)}refreshRem();flexible.dpr=win.dpr=dpr;flexible.refreshRem=refreshRem;flexible.rem2px=function(d){var val=parseFloat(d)*this.rem;if(typeof d==="string"&&d.match(/rem$/)){val+="px"}return val};flexible.px2rem=function(d){var val=parseFloat(d)/this.rem;if(typeof d==="string"&&d.match(/px$/)){val+="rem"}return val}})(window,window["lib"]||(window["lib"]={}));
-        </script>
-        <link rel="preload" as="style" onload="this.rel='stylesheet'" href="/static/g/css/main.css?1587979493">
-        <link rel="canonical" href="{{ .baseurl }}{{ .canolink }}" >
-        <title>{{ .title }}</title>
-        {{ .styles }}
-    </head>
-    <body style="font-size: 12px;">
-        {{ .html }}
-        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-K55KN4Q"
-            height="0" width="0" style="display:none;visibility:hidden"></iframe>
-        </noscript>
-        <script>
-            window.APP_ENV = "{{ .appenv }}"
-            window.BASE_URL = "{{ .baseurl }}"
-            window.AJAX_BASE_URL = "{{ .ajaxbaseurl }}"
-            window.BASE_URL = window.BASE_URL.replace(/[\\]/g,'')
-            window.AJAX_BASE_URL = window.AJAX_BASE_URL.replace(/[\\]/g,'')
-            window.__INITIAL_STATE__ = {{ .state }}
-        </script>
-        <script type="text/javascript" src="/static/g/client.js?1587979493"></script>
-        <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.3.4/vconsole.min.js"></script>
-        <script>
-            let vConsole = new VConsole();
-        </script>
-         <script type="application/ld+json">
-            {{.schema}}
-        </script>
-    </body>
+	<head>
+		<meta charset="utf-8">
+		<meta name="keywords" content="{{ .Keywords }}">
+		<meta name="description" content="{{ .Description }}">
+		<meta property="og:image" content="{{ .OgImage }}">
+		<title>{{ .Title }}</title>
+		{{ .Css }}
+	</head>
+	<body>
+		{{ .Html }}
+		<script>
+			{{ .UrlEnv }}
+			window.__INITIAL_STATE__ = {{ .State }}
+		</script>
+		<script type="text/javascript" src="/static/g/client.js?dd597d26f"></script>
+	</body>
 </html>

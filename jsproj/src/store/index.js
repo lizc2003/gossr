@@ -8,6 +8,9 @@ export function createStore (context) {
         state: {
             meta: {
                 Title: "SSR demo",
+                Keywords: "ssr vue",
+                Description: "This is a ssr demo",
+                OgImage: "https://github.githubassets.com/images/modules/site/logos/google-logo.png",
             },
             count: 0,
             pageData: {},

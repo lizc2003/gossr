@@ -13,7 +13,7 @@ func GetStaticAndProxyHandler(urlPrefix, rootPath string) gin.HandlerFunc {
 	fileServer = http.StripPrefix(urlPrefix, fileServer)
 
 	var proxyServer *httputil.ReverseProxy
-	if ThisServer.IsDevEnv {
+	if ThisServer.IsApiDelegate {
 		apiurl := ThisServer.V8Mgr.GetInternelApiUrl()
 		if apiurl != "" {
 			proxyUrl, _ := url.Parse(apiurl)

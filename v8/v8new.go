@@ -20,8 +20,7 @@ const (
 	MSGTYPE_SSR_CSS       = 82
 	MSGTYPE_SSR_META      = 83
 
-	MSGTYPE_SET_BASEURL     = 101
-	MSGTYPE_SET_AJAXBASEURL = 102
+	MSGTYPE_SET_URL = 101
 )
 
 func IsDevEnvironment(env string) bool {

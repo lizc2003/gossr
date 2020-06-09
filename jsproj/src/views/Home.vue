@@ -6,11 +6,3 @@
     </div>
   </div>
 </template>
-
-<style lang="scss">
-* {
-  margin: 0;
-  padding: 0;
-  -webkit-text-size-adjust: none;
-}
-</style>

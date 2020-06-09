@@ -32,6 +32,7 @@ type Config struct {
 	InternalApiHost string        `toml:"internal_api_host"`
 	InternalApiIp   string        `toml:"internal_api_ip"`
 	InternalApiPort int32         `toml:"internal_api_port"`
+	IsApiDelegate   bool          `toml:"is_api_delegate"`
 	TemplateName    string        `toml:"template_name"`
 	ClientCookie    string        `toml:"client_cookie"`
 	RedirectOnerror string        `toml:"redirect_onerror"`
@@ -45,25 +46,25 @@ type TemplateKey struct {
 }
 
 type Server struct {
-	RequstMgr          *RequestMgr
-	V8Mgr              *v8.V8Mgr
-	HostPort           int
-	JsProjectPath      string
-	Env                string
-	IsDevEnv           bool
-	ClientCookie       string
-	RedirectOnerror    string
-	SsrTemplate        string
-	SsrCtx             []string
-	TemplateKeys       map[string]string
-	tmplateBaseUrl     string
-	tmplateAjaxBaseUrl string
+	RequstMgr       *RequestMgr
+	V8Mgr           *v8.V8Mgr
+	HostPort        int
+	JsProjectPath   string
+	Env             string
+	IsApiDelegate   bool
+	ClientCookie    string
+	RedirectOnerror string
+	SsrTemplate     string
+	SsrCtx          []string
+	TemplateKeys    map[string]string
+	TemplateUrlEnv  string
 }
 
 var ThisServer *Server
 
 func NewServer(c *Config) error {
-	templateKeys := map[string]string{"Html": "html", "Css": "html", "State": "js"}
+	fmt.Println(c.Templates)
+	templateKeys := map[string]string{"State": "js"}
 	for _, v := range c.Templates {
 		if _, ok := templateKeys[v.Key]; !ok {
 			templateKeys[v.Key] = v.Type
@@ -92,8 +93,8 @@ func NewServer(c *Config) error {
 		RedirectOnerror: c.RedirectOnerror,
 		Env:             c.Env,
 		SsrCtx:          c.SsrCtx,
+		IsApiDelegate:   c.IsApiDelegate,
 		TemplateKeys:    templateKeys,
-		IsDevEnv:        v8.IsDevEnvironment(c.Env),
 	}
 
 	v8mgr, err := newV8Mgr(c)

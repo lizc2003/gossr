@@ -58,14 +58,30 @@ func HandleSsrRequest(c *gin.Context) {
 		return
 	}
 
-	templateName := ThisServer.SsrTemplate
-	c.HTML(http.StatusOK, templateName, gin.H{
-		"html":        template.HTML(result.Html),
-		"styles":      template.HTML(result.Css),
-		"appenv":      ThisServer.Env,
-		"baseurl":     ThisServer.tmplateBaseUrl,
-		"ajaxbaseurl": ThisServer.tmplateAjaxBaseUrl,
-	})
+	outputHtml(c, result)
+}
+
+func outputHtml(c *gin.Context, result SsrResult) {
+	templName := ThisServer.SsrTemplate
+	templObj := gin.H{
+		"Html":   template.HTML(result.Html),
+		"Css":    template.HTML(result.Css),
+		"UrlEnv": template.JS(ThisServer.TemplateUrlEnv),
+	}
+	for k, v := range result.Meta {
+		if v != "" {
+			ktype := ThisServer.TemplateKeys[k]
+			switch ktype {
+			case "js":
+				templObj[k] = template.JS(v)
+			case "html":
+				templObj[k] = template.HTML(v)
+			default:
+				templObj[k] = v
+			}
+		}
+	}
+	c.HTML(http.StatusOK, templName, templObj)
 }
 
 func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool) {
