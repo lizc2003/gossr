@@ -9,6 +9,9 @@
   import { mapState, mapMutations } from 'vuex';
 
   export default {
+    asyncData({store, route, context}) {
+      return store.dispatch('xhrTest')
+    },
     components: {
       Counter
     },

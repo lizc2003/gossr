@@ -11,10 +11,16 @@ import (
 	"errors"
 	"github.com/lizc2003/gossr/common/tlog"
 	"github.com/lizc2003/gossr/common/util"
+	"runtime"
 )
 
 import "unsafe"
 import "sync"
+
+const (
+	V8_LIBPATH_MAC   = "/usr/local/Cellar/v8/8.1.307.32/libexec"
+	V8_LIBPATH_LINUX = "/usr/local/lib64/v8"
+)
 
 var initV8Once sync.Once
 var workerTableLock sync.Mutex
@@ -79,7 +85,13 @@ func New(sendCb SendCallback, requestCb RequestCallback) *Worker {
 	workerTableLock.Unlock()
 
 	initV8Once.Do(func() {
-		C.v8_init()
+		v8Path := V8_LIBPATH_LINUX
+		if runtime.GOOS == "darwin" {
+			v8Path = V8_LIBPATH_MAC
+		}
+		icu_path := C.CString(v8Path + "/icudtl.dat")
+		C.v8_init(icu_path)
+		C.free(unsafe.Pointer(icu_path))
 	})
 
 	w.cWorker = C.v8_worker_new(C.int(w.tableIndex))

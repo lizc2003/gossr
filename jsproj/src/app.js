@@ -9,10 +9,11 @@ export function createApp (context) {
   const router = createRouter();
 
   if (typeof window == 'undefined') {
-    if(context && context.ssrCtx) {
-      axios.defaults.headers.common['SSR-Ctx'] = context.ssrCtx;
+    if (context && context.ssrCtx) {
+      axios.defaults.headers.common['SSR-Ctx'] = JSON.stringify(context.ssrCtx);
     }
   }
+  axios.defaults.baseURL = API_BASE_URL;
 
   const app = new Vue({
       router,

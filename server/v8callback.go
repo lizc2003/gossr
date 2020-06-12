@@ -43,29 +43,29 @@ func setTemplateEnv(msg string) {
 		var dat map[string]string
 		err := json.Unmarshal([]byte(msg), &dat)
 		var baseUrl string
-		var ajaxUrl string
+		var apiUrl string
 		if err == nil {
 			if v, ok := dat["base"]; ok {
 				baseUrl = v
 			}
-			if v, ok := dat["ajax"]; ok {
-				ajaxUrl = v
+			if v, ok := dat["api"]; ok {
+				apiUrl = v
 			}
 		}
-		if baseUrl != "" && ajaxUrl != "" {
+		if baseUrl != "" && apiUrl != "" {
 			if ThisServer.IsApiDelegate {
-				u, err := url.Parse(ajaxUrl)
+				u, err := url.Parse(apiUrl)
 				if err != nil {
 					tlog.Error(err)
 					return
 				}
 				u.Host = u.Hostname() + ":" + strconv.FormatInt(int64(ThisServer.HostPort), 10)
-				ajaxUrl = u.String()
+				apiUrl = u.String()
 			}
 
 			ThisServer.TemplateUrlEnv = fmt.Sprintf(`window.APP_ENV="%s";
 			window.BASE_URL="%s";
-			window.AJAX_BASE_URL="%s";`, ThisServer.Env, baseUrl, ajaxUrl)
+			window.API_BASE_URL="%s";`, ThisServer.Env, baseUrl, apiUrl)
 		}
 	}
 }

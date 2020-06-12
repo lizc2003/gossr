@@ -7,7 +7,7 @@ extern "C" {
 struct V8Worker_s;
 typedef struct V8Worker_s V8Worker;
 
-void         v8_init();
+void         v8_init(char* icu_path);
 const char*  v8_version();
 V8Worker*    v8_worker_new(int table_index);
 void         v8_worker_dispose(V8Worker* w);

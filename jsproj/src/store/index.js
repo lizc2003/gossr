@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import axios from 'axios';
 
 Vue.use(Vuex);
 
@@ -22,6 +23,13 @@ export function createStore (context) {
             decreaseCount (state) {
                 state.count--
             },
+        },
+        actions: {
+            xhrTest (context) {
+                return axios.get('/api/check').then(res => {
+                    console.log(res.data)
+                })
+            }
         }
     })
 }

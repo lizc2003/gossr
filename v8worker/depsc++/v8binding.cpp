@@ -229,9 +229,9 @@ const char* v8_last_exception(V8Worker* w) {
   return w->last_exception.c_str();
 }
 
-void v8_init() {
+void v8_init(char* icu_path) {
   if (g_v8platform.get() == nullptr) {
-    V8::InitializeICUDefaultLocation("v8worker");
+    V8::InitializeICU(icu_path);
     g_v8platform = platform::NewDefaultPlatform();
     V8::InitializePlatform(g_v8platform.get());
     V8::Initialize();

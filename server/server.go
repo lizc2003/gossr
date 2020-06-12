@@ -63,7 +63,6 @@ type Server struct {
 var ThisServer *Server
 
 func NewServer(c *Config) error {
-	fmt.Println(c.Templates)
 	templateKeys := map[string]string{"State": "js"}
 	for _, v := range c.Templates {
 		if _, ok := templateKeys[v.Key]; !ok {

@@ -181,9 +181,11 @@ func (this *xmlHttpRequestMgr) performRequest(req *xmlHttpReq) {
 				err := json.Unmarshal([]byte(v), &headers)
 				if err == nil {
 					for kk, vv := range headers {
-						kk = strings.ReplaceAll(kk, "_", "-")
-						tlog.Infof("xhr header %s: %s", kk, vv)
-						request.Header.Set(kk, vv)
+						if vv != "" {
+							kk = strings.ReplaceAll(kk, "_", "-")
+							tlog.Infof("xhr header %s: %s", kk, vv)
+							request.Header.Set(kk, vv)
+						}
 					}
 				}
 			}

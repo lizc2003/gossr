@@ -1,12 +1,24 @@
 package server
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
 	"strings"
 )
+
+type DebugTransport struct{}
+
+func (DebugTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	b, err := httputil.DumpRequestOut(r, false)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(string(b))
+	return http.DefaultTransport.RoundTrip(r)
+}
 
 func GetStaticAndProxyHandler(urlPrefix, rootPath string) gin.HandlerFunc {
 	fileServer := http.FileServer(gin.Dir(rootPath, false))
@@ -18,6 +30,13 @@ func GetStaticAndProxyHandler(urlPrefix, rootPath string) gin.HandlerFunc {
 		if apiurl != "" {
 			proxyUrl, _ := url.Parse(apiurl)
 			proxyServer = httputil.NewSingleHostReverseProxy(proxyUrl)
+			targetHost := proxyUrl.Host
+			originD := proxyServer.Director
+			proxyServer.Director = func(r *http.Request) {
+				originD(r)          // call default director
+				r.Host = targetHost // set Host header as expected by target
+			}
+			//proxyServer.Transport = DebugTransport{}
 		}
 	}
 
