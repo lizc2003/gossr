@@ -6,7 +6,8 @@
 
 <style lang="scss">
 * {
-  margin: 0;
+  font-size: 20px;
+  margin: 2px;
   padding: 0;
   -webkit-text-size-adjust: none;
 }

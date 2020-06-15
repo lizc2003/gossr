@@ -20,8 +20,8 @@
 
 <style lang="scss">
   .btn {
-    width: 30px;
-    height: 20px;
+    width: 45px;
+    height: 30px;
     background-color: gray;
     margin: 5px;
     border-radius: 3px;

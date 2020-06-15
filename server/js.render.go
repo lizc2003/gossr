@@ -14,6 +14,7 @@ serverBundle(RENDER_CONTEXT).then((appObj) => {
 
 		v8worker.send(83, JSON.stringify(meta), context.v8reqId)
 
+		//console.log("renderToString begin...")
 		renderToString(app, context, (err, html) => {
 			try {
 				if (err) {

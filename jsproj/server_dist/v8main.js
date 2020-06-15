@@ -1,6 +1,6 @@
-BASE_URL = "http://dev.olist.ng";
+BASE_URL = "http://localhost:9090";
 if(APP_ENV === 'prod') {
-    BASE_URL = 'https://olist.ng';
+    BASE_URL = 'https://localhost:9090';
 }
 API_BASE_URL = BASE_URL;
 

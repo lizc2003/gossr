@@ -10,6 +10,8 @@ template_name = "ssr.prod.html"
 client_cookie = "gossr_id"
 redirect_onerror = "/error/404"
 ssr_ctx = ["User-Agent","X-Forwarded-For"]
+Templates = [{key = "State", type = "js"},
+    {key = "OgImage", type = "html"}]
 
 [Log]
 debug=false
@@ -17,4 +19,4 @@ filenum=20
 filesize=256
 filename="run"
 level="INFO"
-dir="/data/log/ssr_logs"
+dir="/data/log/gossr_logs"

@@ -15,6 +15,7 @@ export function createStore (context) {
             },
             count: 0,
             pageData: {},
+            xhrResult: "",
         },
         mutations: {
             increaseCount (state) {
@@ -23,11 +24,15 @@ export function createStore (context) {
             decreaseCount (state) {
                 state.count--
             },
+            setXhrResult(state, result) {
+                state.xhrResult = result
+            }
         },
         actions: {
-            xhrTest (context) {
+            xhrTest ({commit}) {
                 return axios.get('/api/check').then(res => {
-                    console.log(res.data)
+                    console.log("XMLHttpRequest ok.")
+                    commit('setXhrResult', res.data)
                 })
             }
         }

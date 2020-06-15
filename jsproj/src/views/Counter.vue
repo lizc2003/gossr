@@ -1,6 +1,9 @@
 <template lang="html">
   <div>
     <Counter :count='count' :increase-count='increaseCount' :decrease-count='decreaseCount'></Counter>
+    <br /><br />
+    <p>XMLHttpRequest result:</p>
+    <div>{{xhrResult}}</div>
   </div>
 </template>
 
@@ -17,13 +20,14 @@
     },
     computed: {
       ...mapState([
-        'count'
+        'count',
+        'xhrResult',
       ])
     },
     methods: {
       ...mapMutations([
         'increaseCount',
-        'decreaseCount'
+        'decreaseCount',
       ])
     }
   };
