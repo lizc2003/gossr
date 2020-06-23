@@ -25,10 +25,15 @@ export function createApp (context) {
 }
 
 export function callComponentsHookWith(compoList, hookName, context) {
-  return compoList.map((component) => {
+  try {
+    return compoList.map((component) => {
       const hook = component[hookName];
       if (hook) {
           return hook(context);
       }
-  }).filter(_ => _);
+    }).filter(_ => _);
+  } catch (e) {
+    console.error(e);
+    return undefined
+  }
 }
