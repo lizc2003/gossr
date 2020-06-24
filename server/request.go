@@ -70,7 +70,7 @@ func outputHtml(c *gin.Context, result SsrResult) {
 	}
 	for k, v := range result.Meta {
 		if v != "" {
-			ktype := ThisServer.TemplateKeys[k]
+			ktype := ThisServer.TemplateVars[k]
 			switch ktype {
 			case "js":
 				templObj[k] = template.JS(v)

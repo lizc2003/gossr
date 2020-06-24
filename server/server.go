@@ -37,10 +37,10 @@ type Config struct {
 	ClientCookie    string        `toml:"client_cookie"`
 	RedirectOnerror string        `toml:"redirect_onerror"`
 	SsrCtx          []string      `toml:"ssr_ctx"`
-	Templates       []TemplateKey `toml:"Templates"`
+	TemplateVars    []TemplateVar `toml:"template_vars"`
 }
 
-type TemplateKey struct {
+type TemplateVar struct {
 	Key  string `toml:"key"`
 	Type string `toml:"type"`
 }
@@ -56,17 +56,17 @@ type Server struct {
 	RedirectOnerror string
 	SsrTemplate     string
 	SsrCtx          []string
-	TemplateKeys    map[string]string
+	TemplateVars    map[string]string
 	TemplateUrlEnv  string
 }
 
 var ThisServer *Server
 
 func NewServer(c *Config) error {
-	templateKeys := map[string]string{"State": "js"}
-	for _, v := range c.Templates {
-		if _, ok := templateKeys[v.Key]; !ok {
-			templateKeys[v.Key] = v.Type
+	templateVars := map[string]string{"State": "js"}
+	for _, v := range c.TemplateVars {
+		if _, ok := templateVars[v.Key]; !ok {
+			templateVars[v.Key] = v.Type
 		}
 	}
 
@@ -93,7 +93,7 @@ func NewServer(c *Config) error {
 		Env:             c.Env,
 		SsrCtx:          c.SsrCtx,
 		IsApiDelegate:   c.IsApiDelegate,
-		TemplateKeys:    templateKeys,
+		TemplateVars:    templateVars,
 	}
 
 	v8mgr, err := newV8Mgr(c)
@@ -105,8 +105,7 @@ func NewServer(c *Config) error {
 
 	handler := getHttpHandler(c)
 	fmt.Println(util.FormatFullTime(time.Now()), "running ...")
-	gracehttp.Serve(&http.Server{Addr: c.Host, Handler: handler})
-	return nil
+	return gracehttp.Serve(&http.Server{Addr: c.Host, Handler: handler})
 }
 
 func getHttpHandler(c *Config) http.Handler {
