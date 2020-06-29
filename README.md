@@ -1,62 +1,64 @@
 # gossr
 
-gossr 是一个用于Web开发的服务器端渲染框架(SSR)，使用 golang + V8 实现，基于Vue搭建。类似于Nuxt，Next这类SSR框架，只是它们使用Nodejs实现。
+[README](README.md) | [中文文档](README_cn.md)
 
-## 优势
-- SSR框架本身的优势
-   - 更好的SEO，搜索引擎爬虫可以直接抓取完全渲染的页面。
-   - 更快的内容到达时间 (time-to-content)，用户将会更快速地看到完整渲染的页面，从而有更好的用户体验。
-- golang + V8 实现，相比基于Nodejs的方案，有更好的性能
-   - 使用golang实现服务器的框架，可以多线程调度多个V8 VM实例。
-   - 在实际工程中，js往往会有内存泄漏，这个对于服务器是致命的，本框架通过设置V8 VM的生命期，生命期到后则删除该实例，从而解决了内存泄漏，保证服务器可以长时间稳定运行。
-- 实现了SSR运行所需的js环境
-   - 实现了CommonJS require加载规范
-   - 实现了XMLHttpRequest，可以执行ajax请求
-   - 实现了console.debug, console.log, console.info, console.warn, console.error
-   - 没有实现SSR不推荐使用的setTimeout和setInterval方法，从而规避潜在的问题
-- 支持更好的开发调试
-   - SSR端和浏览器端支持统一的全局变量BASE_URL、API_BASE_URL，线上环境和开发环境代码统一
-   - API_BASE_URL在开发环境自动支持api调用的转发，从而保证cookie可以正确传递
-- 服务部署简单
-   - golang代码编译成一个单一的可执行文件，只要在服务器部署该执行文件和webpack打包好的js脚本就可以了
+gossr is a server-side rendering framework (SSR) for web development, implemented using golang + V8 + Vue. Similar to Nuxt or Next, but they are implemented using Nodejs.
+
+## Advantage
+- The advantages of the SSR framework itself
+   - Better SEO, search engine crawlers can directly crawl fully rendered pages
+   - Faster content arrival time (time-to-content), users will see the fully rendered page more quickly, so as to have a better user experience
+- Golang + V8 implementation, better performance than Nodejs-based solutions
+   - Using golang to implement the server framework, that can schedule multiple V8 VM instances in multiple threads.
+   - In actual projects, js often has a memory leak, which is fatal to the server. This framework solves the memory leak by setting the V8 VM's lifetime and deleting the instance after the lifetime expires, thus ensuring that the server can last for a long time.
+- Implemented the js environment required for SSR
+   - Implemented CommonJS require specification
+   - Implemented XMLHttpRequest, can execute ajax request
+   - Implemented console.debug, console.log, console.info, console.warn, console.error
+   - The setTimeout and setInterval methods that are not recommended by SSR are not implemented to avoid potential problems
+- Support better development and debugging
+   - SSR and browser support unified global variables BASE_URL, API_BASE_URL, unified production environment and development environment code
+   - API_BASE_URL automatically supports delegating of api calls in the development environment, thereby ensuring that cookies can be delivered correctly
+- Simple server deployment
+   - Golang code is compiled into a single executable file, as long as the executable file and webpack packaged js script are deployed on the server
   
-## 编译运行
-1. 安装V8环境
-   - MacOS环境
+## Build and run
+1. Install V8 environment
+   - MacOS
       1. `cd install.v8`
       2. `brew install ./Formula/v8.rb`
-   - CentOS 7环境
-      1. 打开install.v8/v8dist-*.rpm.md文件，根据提示的链接，下载rpm包
-      2. 执行命令`rpm -Uvh v8dist-*.rpm`
-   - 其他环境，暂不支持
-2. golang服务器的编译
-   - 进入到项目根目录
-   - 运行`make`，完成编译
-   - 运行`make test`，测试v8 worker
-   - 运行`make clean`，清空编译的文件
-3. js工程的打包
-   1. 预先安装node环境
+   - CentOS 7
+      1. Open the install.v8/v8dist-*.rpm.md file and download the rpm package according to the link
+      2. Execute the command `rpm -Uvh v8dist-*.rpm`
+   - Not supported now in other environments
+2. Compilation of golang server
+   - Go to the project root directory
+   - Run `make` to complete the compilation
+   - Run `make test` to test v8 worker
+   - Run `make clean` to clean the project
+3. Packaging of js project
+   1. Install node environment in advance
    2. `cd jsproj`
-   3. `npm install` 安装项目的依赖包
-   4. `npm run build-dev`打包开发环境的包，或者`npm run build-prod`打包正式环境的包
-4. 运行
-   1. 上述3个步骤都完成后，就可以运行服务
-   2. `./gossr --config conf/gossr-dev.toml`命令运行，conf目录下gossr-prod.toml是正式环境的配置
-   3. 在浏览器上访问URL: `http://localhost:9090/`，查看输出的内容
+   3. `npm install` installs the dependent packages of the project
+   4. `npm run build-dev` package for development environment, or `npm run build-prod` package for production environment
+4. Run
+   1. After the above three steps are completed, you can run the server
+   2. Run by `./gossr --config conf/gossr-dev.toml`，gossr-prod.toml in the conf directory is the configuration of the production environment
+   3. Visit the URL: `http://localhost:9090/` on the browser to view the output
    
-## 配置文件说明
-   - host：服务器监听的ip和端口。示例："0.0.0.0:9090"，表示监听服务器所有的ip上，端口是9090
-   - env： 表示服务器运行在开发环境下，还是正式环境下。"dev"表示开发环境，"prod"表示正式环境，也可以自定义环境。js定义了一个全局变量APP_ENV, 就是该值
-   - v8_maxcount：表示最多运行多少个V8 VM实例
-   - v8_lifetime：表示每个V8 VM实例的生命期，单位秒。在实例的生命期内，加载的js脚本会保持在内存，不会重新加载，在开发环境中，可以设置为0，来强制每次请求都重新创建实例。
-   - js_project_path：js工程的目录
-   - static_url_path：资源url的前缀，生成的客户端js，img，css等资源的url前缀
-   - is_api_delegate：服务器是否做api转发，如果为true，则会把/api前缀的前端ajax请求，转发到internal_api_host配置的服务器上的。
-   - internal_api_host：转发请求的host
-   - internal_api_ip：ssr的后端ajax请求，会强制改成该ip，这样会提高后端ajax请求的性能。此时，如果配置了internal_api_host，请求的Header头的Host会设置成该值。
-   - internal_api_port：上述配置的api请求服务器的port
-   - template_name：输出html页面的模版，模版目录是 jsproj/server_dist/template
-   - client_cookie：如果不为空，gossr服务器会生成一个以它命名的生命期很长的cookie，可以做为客户端的标识id
-   - redirect_onerror：如果不为空，生成页面的js脚本如果发生错误，则请求返回302 页面跳转的响应
-   - ssr_ctx：ssr框架会根据配置的header，获取请求对应的header值，并传到js脚本里，脚本里可以通过context.ssrCtx访问对应的header值。并且，后端ajax请求，也会自动带上这些header值。缺省会包含Cookie这个header
-   - template_vars：模版的变量定义，会把脚本生成的context.meta对象对应的值，映射到模版里输出。type为js表示变量的内容是js脚本；type为html表示变量的内容是html内容，不会做字符<、>等的逃逸。其他的type会做内容的逃逸，并且不必在配置项中列出。
+## Configuration Files
+   - host: ip and port which server listens to. Example: "0.0.0.0:9090", indicating that all the IPs of the server, and port 9090
+   - env: indicates that the server is running in the development environment or in production environment. "dev" means the development environment, "prod" means the production environment, or you can customize the environment. In js defines a global variable APP_ENV, which is the value
+   - v8_maxcount: indicates how many V8 VM instances to run at most
+   - v8_lifetime: indicates the life time of each V8 VM instance, in seconds. During the lifetime of the instance, the loaded js script will remain in memory and will not be reloaded. In the development environment, it can be set to 0 to force the instance to be recreated every time when requested.
+   - js_project_path: directory of js project
+   - static_url_path: the prefix of resource url, which generated client js, img, css and other resource
+   - is_api_delegate: Whether the server does api delegating. If it is true, it will delegate the browser-end ajax request prefixed by /api to the server configured by internal_api_host.
+   - internal_api_host: the server that delegated the request
+   - internal_api_ip: ssr backend ajax request will be forced to change to this ip, which will improve the performance of backend ajax request. At this time, if internal_api_host is configured, the Host of the request header will be set to this value.
+   - internal_api_port: the API server's port
+   - template_name: template for outputting html pages, the template directory is jsproj/server_dist/template
+   - client_cookie: if it is not empty, the gossr server will generate a cookie with a long lifetime, which can be used as the client's identification id
+   - redirect_onerror: If it is not empty, if an error occurs in the js script that generates the page, the request returns a 302 page response
+   - ssr_ctx: The ssr framework will obtain the header value corresponding to the request according to the configured header, and pass it to the js script. The script can access the corresponding header value through context.ssrCtx. And, the backend ajax request will automatically bring these header values. Cookie header will be included by default
+   - template_vars: template variable definition, will map the corresponding value of the state.meta object generated by the script to the template output. Type 'js' indicates that the content of the variable is a js script; type 'html' indicates that the content of the variable is html content, and will not escape the characters <, >, etc. Other types will escape the content and do not have to be listed in the configuration item.
