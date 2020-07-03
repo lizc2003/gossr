@@ -19,10 +19,10 @@ import (
 )
 
 const renderJsContent = `
-serverBundle(RENDER_CONTEXT).then((appObj) => {
+(function() {
+const context = RENDER_CONTEXT;
+serverBundle(context).then((app) => {
 	try {
-		const app = appObj.app
-		const context = appObj.context
 		const meta = context.meta
 		meta.State = JSON.stringify(context.state)
 
@@ -55,9 +55,7 @@ serverBundle(RENDER_CONTEXT).then((appObj) => {
 		console.error(e);
 		v8worker.send(81, e, context.v8reqId)
 	}
-}, (errObj) => {
-	const err = errObj.err
-	const context = errObj.context
+}).catch((err) => {
 	if (err.code == 404) {
 		v8worker.send(81, "404 Page not found", context.v8reqId)
 	} else {
@@ -65,6 +63,7 @@ serverBundle(RENDER_CONTEXT).then((appObj) => {
 		v8worker.send(81, err, context.v8reqId)
 	}
 });
+})();
 `
 
 var renderJsPart1 string
