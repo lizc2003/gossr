@@ -32,12 +32,12 @@ serverBundle(context).then((app) => {
 		renderToString(app, context, (err, html) => {
 			try {
 				if (err) {
+					console.error(err)
 					if (err.code == 404) {
 						v8worker.send(81, "404 Page not found", context.v8reqId)
 					} else if (err.code) {
 						v8worker.send(81, err.code + " Internal Server Error", context.v8reqId)
 					} else {
-						console.error(err)
 						v8worker.send(81, err, context.v8reqId)
 					}
 				} else {
@@ -56,10 +56,10 @@ serverBundle(context).then((app) => {
 		v8worker.send(81, e, context.v8reqId)
 	}
 }).catch((err) => {
+	console.error(err)
 	if (err.code == 404) {
 		v8worker.send(81, "404 Page not found", context.v8reqId)
 	} else {
-		console.error(err)
 		v8worker.send(81, err, context.v8reqId)
 	}
 });

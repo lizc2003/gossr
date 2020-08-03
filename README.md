@@ -41,6 +41,7 @@ gossr is a server-side rendering framework (SSR) for web development, implemente
    2. `cd jsproj`
    3. `npm install` installs the dependent packages of the project
    4. `npm run build-dev` package for development environment, or `npm run build-prod` package for production environment
+   5. `npm run watch` package for development environment, and monitors the changes of the file, and incrementally updates the package content, that is, it can be hot updated.
 4. Run
    1. After the above three steps are completed, you can run the server
    2. Run by `./gossr --config conf/gossr-dev.toml`，gossr-prod.toml in the conf directory is the configuration of the production environment

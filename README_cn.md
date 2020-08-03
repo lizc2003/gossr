@@ -39,6 +39,7 @@ gossr 是一个用于Web开发的服务器端渲染框架(SSR)，使用 golang +
    2. `cd jsproj`
    3. `npm install` 安装项目的依赖包
    4. `npm run build-dev`打包开发环境的包，或者`npm run build-prod`打包正式环境的包
+   5. `npm run watch` 打包开发环境的包，并监控文件的变化，增量更新包内容，也就是可以热更新。
 4. 运行
    1. 上述3个步骤都完成后，就可以运行服务
    2. `./gossr --config conf/gossr-dev.toml`命令运行，conf目录下gossr-prod.toml是正式环境的配置

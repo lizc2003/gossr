@@ -1,6 +1,8 @@
 {
     "private": true,
     "scripts": {
+        "watch": "npm run development -- --watch",
+        "development": "cross-env NODE_ENV=development APP_ENV=dev webpack --mode development --config webpack.client.config.js --mode development --config webpack.server.config.js --progress --hide-modules",
         "build-dev": "npm run build-server-dev && npm run build-client-dev",
         "build-prod": "npm run build-server-prod && npm run build-client-prod",
         "build-client-dev": "cross-env NODE_ENV=development APP_ENV=dev webpack --mode development --config webpack.client.config.js --progress --hide-modules",
