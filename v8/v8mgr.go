@@ -15,15 +15,19 @@
 package v8
 
 import (
+	"errors"
 	"fmt"
 	"github.com/lizc2003/gossr/common/tlog"
 	"github.com/lizc2003/gossr/v8worker"
+	"os"
 	"sync/atomic"
 	"time"
 )
 
 const (
 	DELETE_DALAY_TIME = 2 * time.Minute
+	V8_REQ_TIMEOUT    = 8 // seconds
+	V8_EXIT_THRESHOLD = 1000
 )
 
 type V8SendCallback func(msgType int, msg string, userdata int64)
@@ -47,6 +51,7 @@ type V8Mgr struct {
 	workerLifeTime     int64
 	maxWorkerCount     int32
 	currentWorkerCount int32
+	unavailableCount   int32
 }
 
 var TheV8Mgr *V8Mgr
@@ -77,6 +82,11 @@ func NewV8Mgr(c *V8MgrConfig) (*V8Mgr, error) {
 
 func (this *V8Mgr) Execute(name string, code string) error {
 	w := this.acquireWorker()
+	if w == nil {
+		err := errors.New("V8 worker not available.")
+		tlog.Error(err)
+		return err
+	}
 	err := w.Execute(name, code)
 	if err != nil {
 		tlog.Error(err)
@@ -94,6 +104,7 @@ func (this *V8Mgr) GetInternelApiUrl() string {
 
 func (this *V8Mgr) acquireWorker() *v8worker.Worker {
 	var busyWorkers []*v8worker.Worker
+	reqStartTime := time.Now().Unix()
 	for {
 		var ret *v8worker.Worker
 		bEmpty := false
@@ -133,6 +144,16 @@ func (this *V8Mgr) acquireWorker() *v8worker.Worker {
 				busyWorkers = busyWorkers[:0]
 			}
 			time.Sleep(10 * time.Millisecond)
+		}
+
+		if time.Now().Unix()-reqStartTime > V8_REQ_TIMEOUT {
+			errCount := atomic.AddInt32(&this.unavailableCount, 1)
+			if errCount == V8_EXIT_THRESHOLD {
+				err := "v8 unavailable too many times, exit!"
+				tlog.Error(err)
+				os.Exit(1)
+			}
+			return nil
 		}
 	}
 }
