@@ -64,9 +64,9 @@ func HandleSsrRequest(c *gin.Context) {
 	}
 
 	tlog.Infof("http request: %s", url)
-	result, bOK := generateSsrResult(url, ssrCtx)
+	result, bOK, bNoV8 := generateSsrResult(url, ssrCtx)
 
-	if !bOK && ThisServer.RedirectOnerror != "" && reqURL.Path != ThisServer.RedirectOnerror {
+	if !bOK && !bNoV8 && ThisServer.RedirectOnerror != "" && reqURL.Path != ThisServer.RedirectOnerror {
 		tlog.Errorf("redirect: %s?%s", reqURL.Path, reqURL.RawQuery)
 		c.Redirect(302, ThisServer.RedirectOnerror)
 		return
@@ -98,7 +98,7 @@ func outputHtml(c *gin.Context, result SsrResult) {
 	c.HTML(http.StatusOK, templName, templObj)
 }
 
-func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool) {
+func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool, bool) {
 	req := ThisServer.RequstMgr.NewRequest()
 
 	headerJson, _ := json.Marshal(ssrCtx)
@@ -116,7 +116,7 @@ func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool) {
 
 	//fmt.Println(jsCode.String())
 
-	err := ThisServer.V8Mgr.Execute("bundle.js", jsCode.String())
+	err, bNoV8 := ThisServer.V8Mgr.Execute("bundle.js", jsCode.String())
 
 	if err == nil {
 		req.wg.Wait()
@@ -125,7 +125,7 @@ func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool) {
 	}
 	ThisServer.RequstMgr.DestroyRequest(req.reqId)
 
-	return req.result, req.bOK
+	return req.result, req.bOK, bNoV8
 }
 
 func generateUUID() string {

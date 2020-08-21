@@ -80,19 +80,19 @@ func NewV8Mgr(c *V8MgrConfig) (*V8Mgr, error) {
 	return TheV8Mgr, nil
 }
 
-func (this *V8Mgr) Execute(name string, code string) error {
+func (this *V8Mgr) Execute(name string, code string) (error, bool) {
 	w := this.acquireWorker()
 	if w == nil {
 		err := errors.New("V8 worker not available.")
 		tlog.Error(err)
-		return err
+		return err, true
 	}
 	err := w.Execute(name, code)
 	if err != nil {
 		tlog.Error(err)
 	}
 	this.releaseWorker(w)
-	return err
+	return err, false
 }
 
 func (this *V8Mgr) GetInternelApiUrl() string {
