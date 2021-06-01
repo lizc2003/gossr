@@ -117,13 +117,14 @@ func (this *V8Mgr) acquireWorker() *v8worker.Worker {
 			}
 		default:
 			if this.currentWorkerCount < this.maxWorkerCount {
+				atomic.AddInt32(&this.currentWorkerCount, 1)
 				worker, err := newV8Worker(this.env)
 				if err == nil {
-					atomic.AddInt32(&this.currentWorkerCount, 1)
 					worker.SetExpireTime(time.Now().Unix() + this.workerLifeTime)
 					worker.Acquire()
 					ret = worker
 				} else {
+					atomic.AddInt32(&this.currentWorkerCount, -1)
 					bEmpty = true
 				}
 			} else {
