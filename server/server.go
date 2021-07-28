@@ -25,14 +25,11 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"github.com/facebookgo/grace/gracehttp"
-	"github.com/gin-gonic/gin"
 )
 
 const (
-	DIST_DIR_WWW    = "public"
-	DIST_DIR_SERVER = "server_dist"
+	DIST_DIR_WWW    = "dist"
+	DIST_DIR_SERVER = "dist_server"
 )
 
 type Config struct {
@@ -119,12 +116,11 @@ func NewServer(c *Config) error {
 
 	handler := getHttpHandler(c)
 	fmt.Println(util.FormatFullTime(time.Now()), "running ...")
-	return gracehttp.Serve(&http.Server{Addr: c.Host, Handler: handler})
+	return util.GraceHttpServe(c.Host, handler)
 }
 
 func getHttpHandler(c *Config) http.Handler {
-	gin.SetMode(gin.ReleaseMode)
-	e := gin.New()
+	e := util.NewGinEngine()
 
 	localStaticPath := ThisServer.JsProjectPath + DIST_DIR_WWW
 	e.Use(GetStaticAndProxyHandler(c.StaticUrlPath, localStaticPath))

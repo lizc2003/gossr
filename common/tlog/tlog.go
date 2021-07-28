@@ -1,14 +1,12 @@
 package tlog
 
 type Config struct {
-	FileSize  int    `toml:"filesize" json:"filesize"`
-	FileNum   int    `toml:"filenum" json:"filenum"`
-	FileName  string `toml:"filename" json:"filename"`
-	Level     string `toml:"level" json:"level"`
-	Debug     bool   `toml:"debug" json:"debug"`
-	Dir       string `toml:"dir" json:"dir"`
-	UseSyslog bool   `toml:"use_syslog" json:"use_syslog"`
-	SyslogTag string `toml:"syslog_tag" json:"syslog_tag"`
+	FileSize int    `toml:"filesize" json:"filesize"`
+	FileNum  int    `toml:"filenum" json:"filenum"`
+	FileName string `toml:"filename" json:"filename"`
+	Level    string `toml:"level" json:"level"`
+	Debug    bool   `toml:"debug" json:"debug"`
+	Dir      string `toml:"dir" json:"dir"`
 }
 
 func (c *Config) check() {

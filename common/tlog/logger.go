@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"log/syslog"
 	"os"
 	"os/exec"
 	"path"
@@ -18,20 +17,18 @@ var l *Logger
 var mu sync.Mutex
 
 type Logger struct {
-	fileSize  int64
-	fileNum   int
-	fileName  string
-	dir       string
-	host      string
-	debug     bool
-	level     LEVEL
-	byteBuff  bytes.Buffer
-	bytePool  *sync.Pool
-	ch        chan *Msg
-	f         *os.File
-	w         *bufio.Writer
-	useSyslog bool
-	syslogW   *syslog.Writer
+	fileSize int64
+	fileNum  int
+	fileName string
+	dir      string
+	host     string
+	debug    bool
+	level    LEVEL
+	byteBuff bytes.Buffer
+	bytePool *sync.Pool
+	ch       chan *Msg
+	f        *os.File
+	w        *bufio.Writer
 }
 
 type Msg struct {
@@ -60,14 +57,6 @@ func newLogger(config Config) {
 	os.MkdirAll(l.dir, 0755)
 	l.f, _ = os.OpenFile(l.fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	l.w = bufio.NewWriterSize(l.f, 1024*1024)
-
-	if config.UseSyslog {
-		var err error
-		l.syslogW, err = syslog.New(syslog.LOG_LOCAL3|syslog.LOG_INFO, config.SyslogTag)
-		if err == nil {
-			l.useSyslog = true
-		}
-	}
 }
 
 func (l *Logger) run() {
@@ -111,9 +100,6 @@ func (l *Logger) writeLoop() {
 		l.makeLog(a)
 		b := l.byteBuff.Bytes()
 		l.w.Write(b)
-		if l.useSyslog {
-			l.syslogW.Write(b)
-		}
 		l.byteBuff.Reset()
 	}
 }

@@ -8,7 +8,7 @@ var webpackConfig = merge(baseWebpackConfig, {
     app: './src/server.js'
   },
   output: {
-    path: path.resolve(__dirname, './server_dist/g'),
+    path: path.resolve(__dirname, './dist_server/g'),
     filename: 'server.js',
     chunkFilename: 'chunk.[name].js',
     libraryTarget: 'commonjs2'

@@ -48,8 +48,8 @@ module.exports = {
         test: /\.(png|jpg|gif|svg|ttf|woff2|woff|eot)$/,
         loader: 'url-loader',
         options: {
-          limit: 10000, //10k以内的打成base64
-          name: 'img/[name].[ext]?[hash:9]'
+          limit: 10000, // encode base64 within 10K
+          name: 'img/[name].[hash:9].[ext]'
         }
       },
     ],
