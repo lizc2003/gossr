@@ -1,10 +1,11 @@
 var path = require('path');
-var merge = require('webpack-merge')
+const { merge } = require('webpack-merge');
 var baseWebpackConfig = require('./webpack.base.config.js')
 
 const isAppProd = process.env.APP_ENV === 'prod'
 
 var webpackConfig = merge(baseWebpackConfig, {
+  target: 'web',
   entry: './src/client.js',
   output: {
     path: path.resolve(__dirname, './dist/g'),

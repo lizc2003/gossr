@@ -1,7 +1,7 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const ProgressBarPlugin  = require('progress-bar-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HappyPack=require('happypack')
@@ -94,12 +94,8 @@ module.exports = {
 if (isProd) {
   module.exports.optimization = {
     minimize: true,
-    minimizer: [new TerserPlugin()],
+    minimizer: [new TerserPlugin(), new CssMinimizerPlugin()],
   }
-
-  module.exports.plugins = (module.exports.plugins || []).concat([
-    new OptimizeCSSPlugin(),
-  ])
 
   module.exports.devtool = 'cheap-source-map'
 }
