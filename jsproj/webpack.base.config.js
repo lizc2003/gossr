@@ -4,7 +4,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const ProgressBarPlugin  = require('progress-bar-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const HappyPack=require('happypack')
+const autoprefixer = require('autoprefixer');
+const pxtorem = require('postcss-pxtorem');
 
 const isProd = process.env.NODE_ENV === 'production'
 
@@ -27,7 +28,9 @@ module.exports = {
       {
         test: /\.js$/,
         exclude: /node_modules/,
-        use:'happypack/loader?id=js'
+        use:[
+          {loader: 'babel-loader'}
+        ]
       },
       {
         test: /\.css$/,
@@ -41,7 +44,29 @@ module.exports = {
         use:[
           'vue-style-loader',
           'css-loader',
-          'sass-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions:{
+                plugins: [
+                  autoprefixer({}),
+                  pxtorem({
+                    rootValue: 75,
+                    unitPrecision: 8,
+                    propList: ['*'],
+                    replace: true,
+                    mediaQuery: false,
+                    minPixelValue: 2
+                  }),
+                ],
+              }
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+            },
+          },
         ]
       },
       {
@@ -63,12 +88,8 @@ module.exports = {
     }),
     new ProgressBarPlugin({
       format: 'build [:bar] :percent (:elapsed seconds)',
-      clear: false, 
+      clear: false,
       width: 60
-    }),
-    new HappyPack({
-      id:'js',
-      loaders:['babel-loader'],
     }),
   ],
   resolve: {
