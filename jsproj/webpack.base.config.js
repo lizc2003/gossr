@@ -54,9 +54,10 @@ module.exports = {
                     rootValue: 75,
                     unitPrecision: 8,
                     propList: ['*'],
+                    selectorBlackList: ['.norem'],
                     replace: true,
                     mediaQuery: false,
-                    minPixelValue: 2
+                    minPixelValue: 1
                   }),
                 ],
               }
