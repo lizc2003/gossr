@@ -61,3 +61,15 @@ gossr 是一个用于Web开发的服务器端渲染框架(SSR)，使用 golang +
    - redirect_onerror：如果不为空，生成页面的js脚本如果发生错误，则请求返回302 页面跳转的响应
    - ssr_ctx：ssr框架会根据配置的header，获取请求对应的header值，并传到js脚本里，脚本里可以通过context.ssrCtx访问对应的header值。并且，后端ajax请求，也会自动带上这些header值。缺省会包含Cookie这个header
    - template_vars：模版的变量定义，会把脚本生成的state.meta对象对应的值，映射到模版里输出。type为js表示变量的内容是js脚本；type为html表示变量的内容是html内容，不会做字符<、>等的逃逸。其他的type会做内容的逃逸，并且不必在配置项中列出。
+   
+## 部署文件列表
+
+```
+├── gossr
+├── conf/
+└── jsproj/
+    ├── dist/
+    ├── dist_server/
+    └── node_modules/
+        └── vue-server-renderer/
+```
