@@ -53,13 +53,19 @@ func (m *v8module) load() {
 	if len(gJsPaths) == 0 {
 		err = errors.New("js paths not inited")
 	} else {
+		var firstErr error
 		for _, path := range gJsPaths {
 			filename := path + jsId
 			content, err = ioutil.ReadFile(filename)
 			if err == nil {
 				m.Filename = filename
 				break
+			} else if firstErr == nil {
+				firstErr = err
 			}
+		}
+		if err != nil {
+			err = firstErr
 		}
 	}
 
