@@ -102,8 +102,7 @@ func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool, b
 	req := ThisServer.RequstMgr.NewRequest()
 
 	ssrCtxJson, _ := json.Marshal(ssrCtx)
-	tmpJson, _ := json.Marshal(url)
-	urlJson := string(tmpJson)
+	urlJson, _ := json.Marshal(url)
 
 	var jsCode strings.Builder
 	jsCode.Grow(renderJsLength + len(ssrCtxJson) + len(urlJson) + 28)
@@ -111,7 +110,7 @@ func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool, b
 	jsCode.WriteString(`{v8reqId:`)
 	jsCode.WriteString(strconv.FormatInt(req.reqId, 10))
 	jsCode.WriteString(`,url:`)
-	jsCode.WriteString(urlJson)
+	jsCode.Write(urlJson)
 	jsCode.WriteString(`,ssrCtx:`)
 	jsCode.Write(ssrCtxJson)
 	jsCode.WriteString(`}`)
