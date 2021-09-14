@@ -101,16 +101,19 @@ func outputHtml(c *gin.Context, result SsrResult) {
 func generateSsrResult(url string, ssrCtx map[string]string) (SsrResult, bool, bool) {
 	req := ThisServer.RequstMgr.NewRequest()
 
-	headerJson, _ := json.Marshal(ssrCtx)
+	ssrCtxJson, _ := json.Marshal(ssrCtx)
+	tmpJson, _ := json.Marshal(url)
+	urlJson := string(tmpJson)
+
 	var jsCode strings.Builder
-	jsCode.Grow(renderJsLength + len(headerJson) + len(url) + 30)
+	jsCode.Grow(renderJsLength + len(ssrCtxJson) + len(urlJson) + 28)
 	jsCode.WriteString(renderJsPart1)
 	jsCode.WriteString(`{v8reqId:`)
 	jsCode.WriteString(strconv.FormatInt(req.reqId, 10))
-	jsCode.WriteString(`,url:"`)
-	jsCode.WriteString(url)
-	jsCode.WriteString(`",ssrCtx:`)
-	jsCode.Write(headerJson)
+	jsCode.WriteString(`,url:`)
+	jsCode.WriteString(urlJson)
+	jsCode.WriteString(`,ssrCtx:`)
+	jsCode.Write(ssrCtxJson)
 	jsCode.WriteString(`}`)
 	jsCode.WriteString(renderJsPart2)
 
