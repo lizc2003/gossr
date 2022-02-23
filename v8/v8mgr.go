@@ -17,6 +17,7 @@ package v8
 import (
 	"errors"
 	"fmt"
+	"github.com/lizc2003/gossr/alarm"
 	"github.com/lizc2003/gossr/common/tlog"
 	"github.com/lizc2003/gossr/v8worker"
 	"os"
@@ -85,6 +86,7 @@ func (this *V8Mgr) Execute(name string, code string) (error, bool) {
 	if w == nil {
 		err := errors.New("V8 worker not available.")
 		tlog.Error(err)
+		alarm.SendMessage(err.Error())
 		return err, true
 	}
 	err := w.Execute(name, code)
@@ -150,8 +152,9 @@ func (this *V8Mgr) acquireWorker() *v8worker.Worker {
 		if time.Now().Unix()-reqStartTime > V8_REQ_TIMEOUT {
 			errCount := atomic.AddInt32(&this.unavailableCount, 1)
 			if errCount == V8_EXIT_THRESHOLD {
-				err := "v8 unavailable too many times, exit!"
-				tlog.Error(err)
+				errMsg := "v8 unavailable too many times, exit!"
+				tlog.Error(errMsg)
+				alarm.SendMessage(errMsg)
 				os.Exit(1)
 			}
 			return nil

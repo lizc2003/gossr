@@ -13,6 +13,8 @@ redirect_onerror = "/error/404"
 ssr_ctx = ["User-Agent","X-Forwarded-For"]
 template_vars = [{key = "State", type = "js"},
     {key = "OgImage", type = "html"}]
+alarm_url = ""
+alarm_secret = ""
 
 [Log]
 debug=false

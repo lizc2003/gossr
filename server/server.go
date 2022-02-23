@@ -17,6 +17,7 @@ package server
 import (
 	"errors"
 	"fmt"
+	"github.com/lizc2003/gossr/alarm"
 	"github.com/lizc2003/gossr/common/tlog"
 	"github.com/lizc2003/gossr/common/util"
 	v8 "github.com/lizc2003/gossr/v8"
@@ -49,6 +50,8 @@ type Config struct {
 	RedirectOnerror string        `toml:"redirect_onerror"`
 	SsrCtx          []string      `toml:"ssr_ctx"`
 	TemplateVars    []TemplateVar `toml:"template_vars"`
+	AlarmUrl        string        `toml:"alarm_url"`
+	AlarmSecret     string        `toml:"alarm_secret"`
 }
 
 type TemplateVar struct {
@@ -93,6 +96,8 @@ func NewServer(c *Config) error {
 	if c.InternalApiPort == 0 {
 		c.InternalApiPort = 80
 	}
+
+	alarm.InitAlarm(c.Env, c.AlarmUrl, c.AlarmSecret)
 
 	ThisServer = &Server{
 		RequstMgr:       NewRequestMgr(),

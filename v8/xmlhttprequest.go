@@ -17,6 +17,7 @@ package v8
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/lizc2003/gossr/alarm"
 	"github.com/lizc2003/gossr/common/tlog"
 	"github.com/lizc2003/gossr/v8worker"
 	"io/ioutil"
@@ -259,6 +260,7 @@ func (this *xmlHttpRequestMgr) performRequest(req *xmlHttpReq) {
 
 func sendHttpErrorEvent(w *v8worker.Worker, evt *xmlHttpEvent, err error) {
 	tlog.Error(err)
+	go alarm.SendMessage(err.Error())
 
 	evt.Event = "onerror"
 	evt.Error = err.Error()
