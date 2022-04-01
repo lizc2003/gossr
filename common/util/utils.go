@@ -72,8 +72,3 @@ func GetDomainFromHost(host string) string {
 	}
 	return strings.Join(parts[sz-partsLen:], ".")
 }
-
-func GetMilliUnixTime() int64 {
-	return time.Now().UnixNano() / 1e6
-}
-

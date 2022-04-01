@@ -25,7 +25,6 @@ import "C"
 import (
 	"errors"
 	"github.com/lizc2003/gossr/common/tlog"
-	"github.com/lizc2003/gossr/common/util"
 	"runtime"
 )
 
@@ -53,7 +52,7 @@ type msgData struct {
 type Worker struct {
 	cWorker    *C.V8Worker
 	tableIndex int
-	mutex      *util.Mutex
+	mutex      sync.Mutex
 	sendCb     SendCallback
 	requestCb  RequestCallback
 	disposed   bool
@@ -94,7 +93,6 @@ func New(sendCb SendCallback, requestCb RequestCallback) *Worker {
 		sendCb:     sendCb,
 		requestCb:  requestCb,
 		tableIndex: workerTableMaxIndex,
-		mutex:      util.NewMutex(),
 	}
 	workerTable[w.tableIndex] = w
 	workerTableLock.Unlock()

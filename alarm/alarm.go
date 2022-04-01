@@ -1,17 +1,28 @@
 package alarm
 
-import "github.com/lizc2003/gossr/common/util"
+import (
+	"github.com/lizc2003/gossr/common/util"
+	"strings"
+)
 
-var gAlarm *util.RobotDingDing
+var gAlarmDingding *util.RobotDingDing
+var gAlarmFeishu *util.RobotFeishu
 
 func InitAlarm(env string, url string, secret string) {
 	if url != "" {
-		gAlarm = util.NewRobotDingDing(env, "gossr", url, secret)
+		app := "gossr"
+		if strings.Index(url, "feishu") > 0 {
+			gAlarmFeishu = util.NewRobotFeishu(env, app, url, secret)
+		} else {
+			gAlarmDingding = util.NewRobotDingDing(env, app, url, secret)
+		}
 	}
 }
 
 func SendMessage(msg string) {
-	if gAlarm != nil {
-		gAlarm.SendMsg(msg)
+	if gAlarmFeishu != nil {
+		gAlarmFeishu.SendMsg(msg)
+	} else if gAlarmDingding != nil {
+		gAlarmDingding.SendMsg(msg)
 	}
 }

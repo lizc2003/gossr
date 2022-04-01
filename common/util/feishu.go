@@ -20,24 +20,23 @@ import (
 	"encoding/base64"
 	"github.com/lizc2003/gossr/common/tlog"
 	"net/http"
-	"net/url"
 	"os"
 	"strconv"
 	"strings"
 	"time"
 )
 
-type RobotDingDing struct {
+type RobotFeishu struct {
 	env        string
 	url        string
 	secret     string
 	httpClient *http.Client
 }
 
-// https://developers.dingtalk.com/document/app/custom-robot-access
-func NewRobotDingDing(env string, app string, url string, secret string) *RobotDingDing {
+// https://open.feishu.cn/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN
+func NewRobotFeishu(env string, app string, url string, secret string) *RobotFeishu {
 	host, _ := os.Hostname()
-	r := &RobotDingDing{
+	r := &RobotFeishu{
 		env:        "env: " + env + "\n" + "host: " + host + "\n" + "app: " + app + "\n",
 		url:        url,
 		secret:     secret,
@@ -46,26 +45,27 @@ func NewRobotDingDing(env string, app string, url string, secret string) *RobotD
 	return r
 }
 
-func (this *RobotDingDing) SendMsg(msg string) string {
-	var ddurl string
+func (this *RobotFeishu) SendMsg(msg string) string {
+	var timestamp string
+	var sign string
 	if this.secret != "" {
-		timestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
+		timestamp = strconv.FormatInt(time.Now().UnixMilli(), 10)
 		strSign := timestamp + "\n" + this.secret
 
-		h := hmac.New(sha256.New, []byte(this.secret))
-		h.Write([]byte(strSign))
-		sign := url.QueryEscape(base64.StdEncoding.EncodeToString(h.Sum(nil)))
-		ddurl = this.url + "&timestamp=" + timestamp + "&sign=" + sign
-	} else {
-		ddurl = this.url
+		h := hmac.New(sha256.New, []byte(strSign))
+		h.Write([]byte{})
+		sign = base64.StdEncoding.EncodeToString(h.Sum(nil))
 	}
 
 	type msgText struct {
-		Content string `json:"content"`
+		Text string `json:"text"`
 	}
+
 	type msgData struct {
-		Msgtype string  `json:"msgtype"`
-		Text    msgText `json:"text"`
+		Timestamp string  `json:"timestamp,omitempty"`
+		Sign      string  `json:"sign,omitempty"`
+		Msgtype   string  `json:"msg_type"`
+		Content   msgText `json:"content"`
 	}
 
 	b := strings.Builder{}
@@ -75,9 +75,11 @@ func (this *RobotDingDing) SendMsg(msg string) string {
 	b.WriteByte('\n')
 	b.WriteString(msg)
 
-	data := msgData{Msgtype: "text", Text: msgText{Content: b.String()}}
+	data := msgData{Timestamp: timestamp, Sign: sign,
+		Msgtype: "text", Content: msgText{Text: b.String()}}
+
 	var ret string
-	err := HttpPost(this.httpClient, ddurl, nil, data, &ret)
+	err := HttpPost(this.httpClient, this.url, nil, data, &ret)
 	if err != nil {
 		tlog.Error(err)
 	}
