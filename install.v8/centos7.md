@@ -5,5 +5,5 @@
 * install
 
 ```shell
-rpm -Uvh ./v8dist-8.1.307-1.el7.x86_64.rpm
+rpm -Uvh v8dist-8.1.307-1.el7.x86_64.rpm
 ``` 

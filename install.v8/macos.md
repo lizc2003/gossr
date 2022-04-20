@@ -5,6 +5,6 @@
 * install
 
 ```shell
-tar -C /usr/local/Cellar -xzf ./v8.8.1.307.32.tgz
+tar -C /usr/local/Cellar -xzf v8.8.1.307.32.tgz
 cd /usr/local/opt;ln -s ../Cellar/v8/8.1.307.32 v8
 ```
