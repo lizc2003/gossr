@@ -23,11 +23,9 @@ gossr 是一个用于Web开发的服务器端渲染框架(SSR)，使用 golang +
 ## 编译运行
 1. 安装V8环境
    - MacOS环境
-      1. `cd install.v8`
-      2. `brew install ./Formula/v8.rb`
+      - 查看 install.v8/macos.md
    - CentOS 7环境
-      1. 打开install.v8/v8dist-*.rpm.md文件，根据提示的链接，下载rpm包
-      2. 执行命令`rpm -Uvh v8dist-*.rpm`
+      - 查看 install.v8/centos7.md
    - 其他环境，暂不支持
 2. golang服务器的编译
    - 进入到项目根目录

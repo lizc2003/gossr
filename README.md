@@ -25,11 +25,9 @@ gossr is a server-side rendering framework (SSR) for web development, implemente
 ## Build and run
 1. Install V8 environment
    - MacOS
-      1. `cd install.v8`
-      2. `brew install ./Formula/v8.rb`
+      - refer to install.v8/macos.md
    - CentOS 7
-      1. Open the install.v8/v8dist-*.rpm.md file and download the rpm package according to the link
-      2. Execute the command `rpm -Uvh v8dist-*.rpm`
+      - refer to install.v8/centos7.md
    - Not supported now in other environments
 2. Compilation of golang server
    - Go to the project root directory
