@@ -1,5 +1,9 @@
 # gossr
 
+> [!WARNING]
+>
+> This project is based on Vue 2 and is no longer maintained. For Vue 3 projects, please visit https://github.com/lizc2003/vue-ssr-v8go.
+
 [README](README.md) | [中文文档](README_cn.md)
 
 gossr is a server-side rendering framework (SSR) for web development, implemented using golang + V8 + Vue. Similar to Nuxt or Next, but they are implemented using Nodejs.
