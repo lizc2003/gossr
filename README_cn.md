@@ -1,5 +1,9 @@
 # gossr
 
+> [!WARNING]
+>
+> 这个工程基于Vue2并且已经不维护了。对Vue3工程，请访问 https://github.com/lizc2003/vue-ssr-v8go.
+
 gossr 是一个用于Web开发的服务器端渲染框架(SSR)，使用 golang + V8 实现，基于Vue搭建。类似于Nuxt，Next这类SSR框架，只是它们使用Nodejs实现。
 
 ## 优势
